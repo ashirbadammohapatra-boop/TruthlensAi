@@ -1,0 +1,16 @@
+{
+  "name": "TruthLens AI — Digital Media Authenticity Platform",
+  "short_name": "TruthLens AI",
+  "description": "Verify images, videos, audio, and news claims using OpenAI Vision, multi-spectral forensics, and multi-model AI ensembles.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#0284c7",
+  "icons": [
+    {
+      "src": "/favicon.ico",
+      "sizes": "64x64 32x32 24x24 16x16",
+      "type": "image/x-icon"
+    }
+  ]
+}
