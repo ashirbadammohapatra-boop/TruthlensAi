@@ -7,6 +7,8 @@ import { ReportModal } from '@/components/ReportModal';
 import { HeatmapViewer } from '@/components/HeatmapViewer';
 import { OpenAIVisionCard, OpenAIVisionData } from '@/components/OpenAIVisionCard';
 
+import { getApiEndpoint } from '@/lib/api';
+
 interface FormulaBreakdown {
   ai_detection_score: number;
   metadata_score: number;
@@ -98,7 +100,8 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({ onUploadSuccess })
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await fetch('http://localhost:8000/analyze-image', {
+      const targetUrl = getApiEndpoint('/analyze-image');
+      const response = await fetch(targetUrl, {
         method: 'POST',
         body: formData
       });

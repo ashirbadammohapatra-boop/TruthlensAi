@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Image as ImageIcon, Video, Mic, FileText, Globe, UploadCloud, RefreshCw, CheckCircle2, ShieldAlert, Sparkles, FileCheck, ArrowRight, Download } from 'lucide-react';
 import { ImageUploader } from '@/components/ImageUploader';
 import { FactCheckDashboard } from '@/components/FactCheckDashboard';
+import { getApiEndpoint } from '@/lib/api';
 
 export const MultimediaScannerWorkspace: React.FC = () => {
   const [activeMediaTab, setActiveMediaTab] = useState<'image' | 'video' | 'audio' | 'document' | 'url'>('image');
@@ -61,10 +62,11 @@ export const MultimediaScannerWorkspace: React.FC = () => {
     const formData = new FormData();
     formData.append('file', file);
 
-    const endpoint = type === 'video' ? '/analyze-video' : type === 'audio' ? '/analyze-audio' : '/analyze-document';
+    const endpointPath = type === 'video' ? '/analyze-video' : type === 'audio' ? '/analyze-audio' : '/analyze-document';
+    const targetUrl = getApiEndpoint(endpointPath);
 
     try {
-      const res = await fetch(`http://localhost:8000${endpoint}`, {
+      const res = await fetch(targetUrl, {
         method: 'POST',
         body: formData
       });
@@ -103,7 +105,8 @@ export const MultimediaScannerWorkspace: React.FC = () => {
     setMediaResult(null);
 
     try {
-      const res = await fetch('http://localhost:8000/api/analyze-url', {
+      const targetUrl = getApiEndpoint('/api/analyze-url');
+      const res = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ url: urlInput })

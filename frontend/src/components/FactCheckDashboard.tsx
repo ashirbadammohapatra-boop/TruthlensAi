@@ -3,6 +3,8 @@
 import React, { useState } from 'react';
 import { Search, Cpu, ShieldCheck, AlertOctagon, CheckCircle2, FileText, ArrowRight, ExternalLink, RefreshCw, Zap } from 'lucide-react';
 
+import { getApiEndpoint } from '@/lib/api';
+
 interface FactorScore {
   name: string;
   score: number;
@@ -52,7 +54,8 @@ export const FactCheckDashboard: React.FC = () => {
     setResult(null);
 
     try {
-      const response = await fetch('http://localhost:8000/api/analyze-text', {
+      const targetUrl = getApiEndpoint('/api/analyze-text');
+      const response = await fetch(targetUrl, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ text })

@@ -35,7 +35,7 @@ from services.agent.admin_assistant import SREAdminAssistant
 app = FastAPI(
     title="TruthLens Enterprise Autonomous Operations Platform Engine",
     description="Production-grade AI Platform with Autonomous SRE & Security Operations Agent",
-    version="6.0.0"
+    version="6.1.0"
 )
 
 app.add_middleware(ProductionSecurityMiddleware)
@@ -47,6 +47,24 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# Startup Environment Variable Validation
+def validate_environment_on_startup() -> dict:
+    env_status = {
+        "OPENAI_API_KEY": "PRESENT" if os.getenv("OPENAI_API_KEY") else "MISSING (Fallback active)",
+        "HUGGINGFACE_API_KEY": "PRESENT" if os.getenv("HUGGINGFACE_API_KEY") else "MISSING (Fallback active)",
+        "SUPABASE_URL": "PRESENT" if os.getenv("NEXT_PUBLIC_SUPABASE_URL") else "MISSING (Optional)",
+        "DATABASE_URL": "PRESENT" if os.getenv("DATABASE_URL") else "MISSING (Optional)"
+    }
+    print("--------------------------------------------------")
+    print("[INFO] TruthLens Platform Environment Validation:")
+    for key, val in env_status.items():
+        tag = "[OK]" if "PRESENT" in val else "[WARN]"
+        print(f"  {tag} {key}: {val}")
+    print("--------------------------------------------------")
+    return env_status
+
+ENV_CHECK_RESULTS = validate_environment_on_startup()
 
 # Initialize Platform Core Engines & AI Operations Agents
 model_registry = ModelRegistry()
@@ -106,8 +124,9 @@ def read_root():
     return {
         "status": "online",
         "service": "TruthLens Autonomous AI Operations Platform",
-        "version": "6.0.0",
-        "architecture": "Clean Architecture + Autonomous Agent v6.0",
+        "version": "6.1.0",
+        "architecture": "Clean Architecture + Autonomous Agent v6.1",
+        "environment_check": ENV_CHECK_RESULTS,
         "uptime_seconds": round(time.time() - START_TIME, 1),
         "docs": "/docs"
     }
@@ -122,6 +141,7 @@ def health_readiness():
     return {
         "status": "ready" if is_ready else "not_ready",
         "registered_models_count": len(model_registry.registry),
+        "environment_validation": ENV_CHECK_RESULTS,
         "timestamp": time.time()
     }
 
@@ -145,7 +165,6 @@ def get_model_tracing():
 
 @app.get("/api/admin/ops/dashboard")
 def get_ops_dashboard():
-    """Returns complete real-time SRE Operations Dashboard telemetry, audit logs, and security alerts."""
     telemetry = health_monitor.collect_telemetry()
     incidents = health_monitor.detect_incidents()
     security_status = security_sentinel.get_security_status()
@@ -156,19 +175,18 @@ def get_ops_dashboard():
         "audit_logs": recovery_engine.audit_log,
         "pending_approvals": recovery_engine.pending_approvals,
         "security_status": security_status,
+        "environment_validation": ENV_CHECK_RESULTS,
         "timestamp": time.time()
     }
 
 @app.post("/api/admin/ops/assistant")
 def query_ops_assistant(request: AssistantQueryRequest):
-    """Internal natural language AI Assistant for SRE Administrators."""
     telemetry = health_monitor.collect_telemetry()
     security_data = security_sentinel.get_security_status()
     return admin_assistant.answer_query(request.query, telemetry, recovery_engine.audit_log, security_data)
 
 @app.post("/api/admin/ops/approve")
 def approve_high_risk_remediation(request: ApprovalRequest):
-    """Administrator approval endpoint for pending high-risk remediation plans."""
     return recovery_engine.approve_and_execute_plan(request.plan_id)
 
 # --- Multimedia Endpoints ---
