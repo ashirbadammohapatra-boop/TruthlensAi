@@ -5,7 +5,7 @@ import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { SpotlightBackground } from '@/components/ui/SpotlightBackground';
 import { FloatingNavbar } from '@/components/FloatingNavbar';
-import { LayoutDashboard, FileCheck, ShieldCheck, Activity, AlertTriangle, Cpu, UploadCloud, RefreshCw, Layers, Key, Settings, User, Bell, ArrowRight, ArrowUpRight } from 'lucide-react';
+import { LayoutDashboard, FileCheck, ShieldCheck, Activity, AlertTriangle, Cpu, UploadCloud, RefreshCw, Layers, Key, Settings, User, Bell, ArrowRight, ArrowUpRight, CheckCircle2 } from 'lucide-react';
 
 export default function DashboardPage() {
   const [activeTab, setActiveTab] = useState<'overview' | 'reports' | 'api' | 'settings'>('overview');
@@ -43,6 +43,11 @@ export default function DashboardPage() {
           </div>
 
           <div className="flex items-center space-x-3">
+            <span className="px-3.5 py-1.5 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-400 text-xs font-bold flex items-center space-x-1.5">
+              <CheckCircle2 className="w-4 h-4" />
+              <span>Live System Telemetry Active</span>
+            </span>
+
             <Link
               href="/verify"
               className="px-5 py-2.5 rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 text-white font-extrabold text-xs flex items-center space-x-2 shadow-lg shadow-blue-500/25 hover:opacity-95 transition"
