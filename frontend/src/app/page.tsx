@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { SpotlightBackground } from '@/components/ui/SpotlightBackground';
 import { FloatingNavbar } from '@/components/FloatingNavbar';
 import { HeroSection } from '@/components/HeroSection';
@@ -13,7 +14,7 @@ import { EnterpriseSecuritySection } from '@/components/EnterpriseSecuritySectio
 import { EnterprisePricingSection } from '@/components/EnterprisePricingSection';
 import { ContactSection } from '@/components/ContactSection';
 import { MultimediaScannerWorkspace } from '@/components/MultimediaScannerWorkspace';
-import { ShieldCheck, Globe, Share2, ExternalLink } from 'lucide-react';
+import { ShieldCheck } from 'lucide-react';
 
 export default function Home() {
   const [activeTab, setActiveTab] = useState<'media' | 'factcheck'>('media');
@@ -69,17 +70,15 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
           <div className="grid grid-cols-2 md:grid-cols-5 gap-8 text-slate-400">
             
-            {/* Column 1: Brand Info */}
+            {/* Column 1: Official Brand Logo & Info */}
             <div className="col-span-2 space-y-4">
-              <div className="flex items-center space-x-3">
-                <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-500 to-cyan-400 p-[1px]">
-                  <div className="w-full h-full bg-slate-950 rounded-[7px] flex items-center justify-center text-blue-400">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                </div>
-                <span className="text-base font-black text-white tracking-tight">
-                  TruthLens <span className="text-blue-400">AI</span>
-                </span>
+              <div className="relative h-12 w-44">
+                <Image
+                  src="/truthlens-logo.png"
+                  alt="TruthLens AI Official Logo"
+                  fill
+                  className="object-contain object-left"
+                />
               </div>
               <p className="text-xs text-slate-400 leading-relaxed max-w-sm">
                 The Trust Layer for Digital Media — AI-powered media authenticity, multi-spectral forensics, and evidence verification for enterprise operations.
@@ -90,10 +89,11 @@ export default function Home() {
             <div className="space-y-3">
               <span className="text-xs font-bold uppercase text-slate-200 tracking-wider">Platform</span>
               <ul className="space-y-2">
-                <li><a href="#hero" className="hover:text-white transition">Home</a></li>
-                <li><a href="#scanner" className="hover:text-white transition">Multimedia Scanner</a></li>
+                <li><Link href="/" className="hover:text-white transition">Home</Link></li>
+                <li><Link href="/verify" className="hover:text-white transition">Multimedia Scanner</Link></li>
+                <li><Link href="/dashboard" className="hover:text-white transition">Command Center</Link></li>
                 <li><Link href="/features" className="hover:text-white transition">Features Matrix</Link></li>
-                <li><a href="#solutions" className="hover:text-white transition">Solutions</a></li>
+                <li><Link href="/solutions" className="hover:text-white transition">Solutions</Link></li>
               </ul>
             </div>
 
@@ -101,8 +101,8 @@ export default function Home() {
             <div className="space-y-3">
               <span className="text-xs font-bold uppercase text-slate-200 tracking-wider">Developers</span>
               <ul className="space-y-2">
-                <li><a href="#developers" className="hover:text-white transition">REST API Docs</a></li>
-                <li><Link href="/security" className="hover:text-white transition">Security Architecture</Link></li>
+                <li><Link href="/technology" className="hover:text-white transition">AI Engine Docs</Link></li>
+                <li><Link href="/security" className="hover:text-white transition">Security Controls</Link></li>
                 <li><Link href="/trust" className="hover:text-white transition">Trust Center</Link></li>
                 <li><Link href="/responsible-ai" className="hover:text-white transition">Responsible AI</Link></li>
               </ul>
@@ -114,8 +114,8 @@ export default function Home() {
               <ul className="space-y-2">
                 <li><Link href="/privacy" className="hover:text-white transition">Privacy Policy</Link></li>
                 <li><Link href="/terms" className="hover:text-white transition">Terms of Service</Link></li>
-                <li><a href="#faq" className="hover:text-white transition">Enterprise FAQ</a></li>
-                <li><a href="#contact" className="hover:text-white transition">Contact Sales</a></li>
+                <li><Link href="/resources" className="hover:text-white transition">Enterprise FAQ</Link></li>
+                <li><Link href="/contact" className="hover:text-white transition">Contact Sales</Link></li>
               </ul>
             </div>
 

@@ -2,8 +2,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ArrowRight, Menu, X, Sparkles, Cpu, Lock, FileText, HelpCircle, Layers, Building, Zap, Compass, LayoutDashboard } from 'lucide-react';
+import { ArrowRight, Menu, X, Sparkles, Lock, FileText, Cpu, ShieldCheck } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 
 interface FloatingNavbarProps {
@@ -59,32 +60,27 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
         <div
           className={`pointer-events-auto w-full max-w-6xl transition-all duration-300 rounded-2xl sm:rounded-full border backdrop-blur-2xl ${
             isScrolled
-              ? 'py-2.5 px-4 sm:px-6 bg-[#080e1e]/90 border-blue-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.6)] shadow-blue-500/10'
-              : 'py-3 px-4 sm:px-8 bg-[#080e1e]/75 border-slate-800/80 shadow-2xl'
+              ? 'py-2.5 px-4 sm:px-6 bg-[#030712]/95 border-blue-500/30 shadow-[0_8px_32px_rgba(0,0,0,0.8)] shadow-blue-500/10'
+              : 'py-3 px-4 sm:px-8 bg-[#030712]/80 border-slate-800/80 shadow-2xl'
           }`}
         >
           <div className="flex items-center justify-between">
             
-            {/* Brand Logo Left */}
-            <Link href="/" className="flex items-center space-x-2.5 sm:space-x-3.5 group">
-              <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-500 via-sky-400 to-cyan-300 p-[1.5px] transition-transform duration-300 group-hover:scale-105 shadow-md shadow-blue-500/25 shrink-0">
-                <div className="w-full h-full bg-[#030712] rounded-[10px] flex items-center justify-center">
-                  <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 group-hover:text-cyan-300 transition-colors" />
-                </div>
-              </div>
-
-              <div className="flex flex-col">
-                <span className="text-base sm:text-xl font-black tracking-tight text-white font-sans leading-none">
-                  TruthLens <span className="bg-gradient-to-r from-blue-400 to-cyan-300 bg-clip-text text-transparent">AI</span>
-                </span>
-                <span className="text-[9px] sm:text-[10px] font-semibold text-slate-400 tracking-wide mt-0.5 sm:mt-1 hidden xs:inline-block">
-                  The Trust Layer
-                </span>
+            {/* Official Brand Logo Left */}
+            <Link href="/" className="flex items-center space-x-3 group">
+              <div className="relative h-10 w-36 sm:h-11 sm:w-44 transition-transform duration-300 group-hover:scale-[1.02] shrink-0">
+                <Image
+                  src="/truthlens-logo.png"
+                  alt="TruthLens AI Official Logo"
+                  fill
+                  className="object-contain object-left"
+                  priority
+                />
               </div>
             </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden lg:flex items-center space-x-1 bg-slate-950/70 p-1.5 rounded-full border border-slate-800/80 text-xs font-semibold">
+            <nav className="hidden lg:flex items-center space-x-1 bg-slate-950/80 p-1.5 rounded-full border border-slate-800/80 text-xs font-semibold">
               {navLinks.slice(0, 6).map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -93,7 +89,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
                     href={link.href}
                     className={`px-3.5 py-1.5 rounded-full transition-all ${
                       isActive
-                        ? 'bg-blue-600/30 text-white border border-blue-500/40 shadow-sm'
+                        ? 'bg-gradient-to-r from-blue-600/40 to-cyan-500/30 text-white border border-blue-500/50 shadow-sm'
                         : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
                     }`}
                   >
@@ -140,11 +136,15 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
             exit={{ opacity: 0 }}
             className="fixed inset-0 z-40 lg:hidden bg-slate-950/95 backdrop-blur-2xl flex flex-col pt-24 px-6 pb-8 space-y-6 overflow-y-auto"
           >
-            {/* Top Close Bar */}
+            {/* Top Header */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
-              <div className="flex items-center space-x-2">
-                <Sparkles className="w-5 h-5 text-cyan-400" />
-                <span className="text-sm font-bold text-white uppercase tracking-wider">Enterprise Navigation</span>
+              <div className="relative h-10 w-36">
+                <Image
+                  src="/truthlens-logo.png"
+                  alt="TruthLens AI Official Logo"
+                  fill
+                  className="object-contain object-left"
+                />
               </div>
               <button
                 onClick={() => setMobileMenuOpen(false)}
