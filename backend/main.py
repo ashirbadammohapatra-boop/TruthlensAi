@@ -1,7 +1,7 @@
 import os
 import time
 import asyncio
-from typing import List, Optional
+from typing import List, Optional, Dict, Any
 from fastapi import FastAPI, HTTPException, File, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel, Field
@@ -34,10 +34,13 @@ from services.agent.admin_assistant import SREAdminAssistant
 from services.multi_agent.agent_registry import MultiAgentRegistry
 from services.multi_agent.failure_analyzer import FailureAnalyzer
 
+# Import NVIDIA Nemotron Ultra Provider Factory
+from services.providers.provider_factory import AIProviderFactory
+
 app = FastAPI(
     title="TruthLens Enterprise Multi-Agent Verification Platform Engine",
-    description="Production-grade AI Platform with 10 Autonomous Review Agents & Continuous Improvement System",
-    version="6.3.0"
+    description="Production-grade AI Platform with NVIDIA Nemotron Ultra Reasoning Engine & 10 Autonomous Review Agents",
+    version="6.4.0"
 )
 
 app.add_middleware(ProductionSecurityMiddleware)
@@ -53,8 +56,9 @@ app.add_middleware(
 # Startup Environment Variable Validation
 def validate_environment_on_startup() -> dict:
     env_status = {
-        "OPENAI_API_KEY": "PRESENT" if os.getenv("OPENAI_API_KEY") else "MISSING (Fallback active)",
-        "HUGGINGFACE_API_KEY": "PRESENT" if os.getenv("HUGGINGFACE_API_KEY") else "MISSING (Fallback active)",
+        "NEMOTRON_API_KEY": "PRESENT" if os.getenv("NEMOTRON_API_KEY") else "MISSING (Resilient Fallback active)",
+        "OPENAI_API_KEY": "PRESENT" if os.getenv("OPENAI_API_KEY") else "MISSING (Optional)",
+        "HUGGINGFACE_API_KEY": "PRESENT" if os.getenv("HUGGINGFACE_API_KEY") else "MISSING (Optional)",
         "SUPABASE_URL": "PRESENT" if os.getenv("NEXT_PUBLIC_SUPABASE_URL") else "MISSING (Optional)",
         "DATABASE_URL": "PRESENT" if os.getenv("DATABASE_URL") else "MISSING (Optional)"
     }
@@ -68,10 +72,11 @@ def validate_environment_on_startup() -> dict:
 
 ENV_CHECK_RESULTS = validate_environment_on_startup()
 
-# Initialize Platform Core Engines & AI Operations Agents
+# Initialize Platform Core Engines, MLOps, AI Provider & Agents
 model_registry = ModelRegistry()
 inference_tracer = InferenceTracer()
 decision_engine = DecisionEngine()
+ai_provider_factory = AIProviderFactory()
 
 health_monitor = SystemHealthMonitor()
 recovery_engine = AutomatedRecoveryEngine()
@@ -82,6 +87,14 @@ multi_agent_registry = MultiAgentRegistry()
 failure_analyzer = FailureAnalyzer()
 
 START_TIME = time.time()
+
+class ReasoningRequest(BaseModel):
+    media_type: str = Field(..., description="Media type (image, video, audio, text, document)")
+    metadata: Dict[str, Any] = Field(default_factory=dict, description="Extracted metadata dictionary")
+    prompt: Optional[str] = Field(None, description="Custom prompt for reasoning engine")
+
+class ChatQueryRequest(BaseModel):
+    query: str = Field(..., description="User query for Nemotron assistant")
 
 class TextAnalysisRequest(BaseModel):
     text: str = Field(..., description="Claim or text to analyze")
@@ -129,16 +142,37 @@ class AnalysisResult(BaseModel):
     summary: str
     timestamp: float
 
+# --- NVIDIA Nemotron Ultra Provider Endpoints ---
+
+@app.get("/api/ai/providers")
+def get_ai_providers_status():
+    return ai_provider_factory.get_provider_status()
+
+@app.post("/api/ai/reasoning")
+def run_ai_reasoning(request: ReasoningRequest):
+    provider = ai_provider_factory.get_provider()
+    return provider.analyze_media(request.media_type, request.metadata, request.prompt)
+
+@app.post("/api/ai/chat")
+def chat_ai_assistant(request: ChatQueryRequest):
+    provider = ai_provider_factory.get_provider()
+    return {
+        "provider": "NVIDIA Nemotron Ultra",
+        "response": provider.chat_assistant(request.query),
+        "timestamp": time.time()
+    }
+
 # --- Health, MLOps & Multi-Agent Endpoints ---
 
 @app.get("/")
 def read_root():
     return {
         "status": "online",
-        "service": "TruthLens Multi-Agent AI Review & Verification Platform",
-        "version": "6.3.0",
-        "architecture": "Clean Architecture + 10 Autonomous Review Agents v6.3",
+        "service": "TruthLens Platform Engine with NVIDIA Nemotron Ultra Reasoning",
+        "version": "6.4.0",
+        "architecture": "Clean Architecture + NVIDIA Nemotron Ultra + 10 Agents v6.4",
         "environment_check": ENV_CHECK_RESULTS,
+        "ai_provider_status": ai_provider_factory.get_provider_status(),
         "uptime_seconds": round(time.time() - START_TIME, 1),
         "docs": "/docs"
     }
@@ -342,6 +376,10 @@ async def analyze_image(file: UploadFile = File(...)):
     fused_ai_prob = model_evidence.raw_metrics.get("fused_ai_prob", 20.0)
     fused_human_prob = model_evidence.raw_metrics.get("fused_human_prob", 80.0)
 
+    # Optional NVIDIA Nemotron Ultra Reasoning Enrichment
+    provider = ai_provider_factory.get_provider()
+    nemotron_reasoning = provider.analyze_media("image", metadata_res)
+
     return {
         "status": "success",
         "filename": filename,
@@ -364,6 +402,7 @@ async def analyze_image(file: UploadFile = File(...)):
         "heatmap_overlay_base64": heatmap_url,
         "forensic_reasons": forensic_reasons,
         "openai_analysis": openai_res,
+        "nemotron_reasoning": nemotron_reasoning,
         "exif_metadata": metadata_res,
         "execution_time_ms": decision.execution_time_ms,
         "summary": f"Clean Architecture MLOps Complete ({decision.execution_time_ms}ms). Verdict: {decision.verdict.value}. Trust Score: {decision.trust_score}/100.",

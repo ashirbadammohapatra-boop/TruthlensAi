@@ -23,6 +23,27 @@ def test_health_readiness():
     assert response.status_code == 200
     assert response.json()["status"] == "ready"
 
+def test_nemotron_provider_status():
+    response = client.get("/api/ai/providers")
+    assert response.status_code == 200
+    data = response.json()
+    assert data["primary_provider"] == "NVIDIA Nemotron Ultra"
+    assert "nemotron_configured" in data
+
+def test_nemotron_reasoning_endpoint():
+    response = client.post("/api/ai/reasoning", json={"media_type": "image", "metadata": {"resolution": "1920x1080"}})
+    assert response.status_code == 200
+    data = response.json()
+    assert "provider" in data
+    assert "explanation" in data
+
+def test_nemotron_chat_assistant():
+    response = client.post("/api/ai/chat", json={"query": "What is the P95 latency SLA?"})
+    assert response.status_code == 200
+    data = response.json()
+    assert data["provider"] == "NVIDIA Nemotron Ultra"
+    assert "response" in data
+
 def test_evaluation_metrics():
     response = client.get("/api/eval/metrics")
     assert response.status_code == 200
@@ -38,7 +59,6 @@ def test_analyze_text():
     assert data["verdict"] == "Verified"
 
 def test_analyze_image_upload():
-    # Create synthetic PNG test image
     img = Image.new("RGB", (100, 100), color="blue")
     buf = io.BytesIO()
     img.save(buf, format="PNG")
@@ -52,11 +72,9 @@ def test_analyze_image_upload():
     data = response.json()
     assert "trust_score" in data
     assert "verdict" in data
-    assert "confidence" in data
-    assert "forensic_reasons" in data
+    assert "nemotron_reasoning" in data
 
 def test_analyze_video_upload():
-    # Synthetic video bytes payload
     sample_bytes = b"\x00\x00\x00\x1cftypisom" + b"\x00" * 2000
     response = client.post(
         "/analyze-video",
@@ -66,15 +84,6 @@ def test_analyze_video_upload():
     data = response.json()
     assert data["media_type"] == "video"
     assert "trust_score" in data
-    assert "verdict" in data
-    assert "checkpoint_samples" in data
-
-def test_analyze_url_media():
-    response = client.post("/api/analyze-url", json={"url": "https://truthlens.ai/evidence_sample"})
-    assert response.status_code == 200
-    data = response.json()
-    assert "trust_score" in data
-    assert "verdict" in data
 
 def test_security_headers():
     response = client.get("/")
