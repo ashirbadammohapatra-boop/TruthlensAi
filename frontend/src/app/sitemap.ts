@@ -3,24 +3,31 @@ import { MetadataRoute } from 'next';
 export default function sitemap(): MetadataRoute.Sitemap {
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://truthlens.ai';
 
-  return [
-    {
-      url: baseUrl,
-      lastModified: new Date(),
-      changeFrequency: 'daily',
-      priority: 1.0,
-    },
-    {
-      url: `${baseUrl}/privacy`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
-    {
-      url: `${baseUrl}/terms`,
-      lastModified: new Date(),
-      changeFrequency: 'monthly',
-      priority: 0.5,
-    },
+  const routes = [
+    '',
+    '/features',
+    '/solutions',
+    '/technology',
+    '/pricing',
+    '/resources',
+    '/about',
+    '/contact',
+    '/verify',
+    '/dashboard',
+    '/reports',
+    '/settings',
+    '/profile',
+    '/security',
+    '/responsible-ai',
+    '/trust',
+    '/privacy',
+    '/terms'
   ];
+
+  return routes.map((route) => ({
+    url: `${baseUrl}${route}`,
+    lastModified: new Date(),
+    changeFrequency: route === '' ? 'daily' : 'weekly',
+    priority: route === '' ? 1.0 : 0.8
+  }));
 }

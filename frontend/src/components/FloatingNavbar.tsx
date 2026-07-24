@@ -2,17 +2,19 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ShieldCheck, ArrowRight, Menu, X, Sparkles, Cpu, Lock, FileText, HelpCircle } from 'lucide-react';
+import { ShieldCheck, ArrowRight, Menu, X, Sparkles, Cpu, Lock, FileText, HelpCircle, Layers, Building, Zap, Compass, LayoutDashboard } from 'lucide-react';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 
 interface FloatingNavbarProps {
-  activeTab: 'media' | 'factcheck';
-  setActiveTab: (tab: 'media' | 'factcheck') => void;
+  activeTab?: 'media' | 'factcheck';
+  setActiveTab?: (tab: 'media' | 'factcheck') => void;
 }
 
-export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setActiveTab }) => {
+export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const pathname = usePathname();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -35,13 +37,16 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setAc
     };
   }, [mobileMenuOpen]);
 
-  const scrollToSection = (id: string) => {
-    setMobileMenuOpen(false);
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth' });
-    }
-  };
+  const navLinks = [
+    { label: 'Overview', href: '/' },
+    { label: 'Live Scanner', href: '/verify' },
+    { label: 'Dashboard', href: '/dashboard' },
+    { label: 'Solutions', href: '/solutions' },
+    { label: 'Technology', href: '/technology' },
+    { label: 'Pricing', href: '/pricing' },
+    { label: 'Resources', href: '/resources' },
+    { label: 'About', href: '/about' }
+  ];
 
   return (
     <>
@@ -61,10 +66,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setAc
           <div className="flex items-center justify-between">
             
             {/* Brand Logo Left */}
-            <div
-              onClick={() => scrollToSection('hero')}
-              className="flex items-center space-x-2.5 sm:space-x-3.5 cursor-pointer group"
-            >
+            <Link href="/" className="flex items-center space-x-2.5 sm:space-x-3.5 group">
               <div className="relative w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-gradient-to-tr from-blue-500 via-sky-400 to-cyan-300 p-[1.5px] transition-transform duration-300 group-hover:scale-105 shadow-md shadow-blue-500/25 shrink-0">
                 <div className="w-full h-full bg-[#030712] rounded-[10px] flex items-center justify-center">
                   <ShieldCheck className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400 group-hover:text-cyan-300 transition-colors" />
@@ -79,58 +81,32 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setAc
                   The Trust Layer
                 </span>
               </div>
-            </div>
+            </Link>
 
             {/* Desktop Navigation Links */}
-            <nav className="hidden md:flex items-center space-x-1 bg-slate-950/70 p-1.5 rounded-full border border-slate-800/80 text-xs font-semibold">
-              <button
-                onClick={() => scrollToSection('hero')}
-                className="px-4 py-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-900/60 transition-all"
-              >
-                Overview
-              </button>
-
-              <button
-                onClick={() => {
-                  setActiveTab('media');
-                  scrollToSection('scanner');
-                }}
-                className="px-4 py-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-900/60 transition-all"
-              >
-                Live Scanner
-              </button>
-
-              <button
-                onClick={() => scrollToSection('features')}
-                className="px-4 py-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-900/60 transition-all"
-              >
-                Features
-              </button>
-
-              <button
-                onClick={() => scrollToSection('developers')}
-                className="px-4 py-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-900/60 transition-all"
-              >
-                API Platform
-              </button>
-
-              <button
-                onClick={() => scrollToSection('pricing')}
-                className="px-4 py-2 rounded-full text-slate-300 hover:text-white hover:bg-slate-900/60 transition-all"
-              >
-                Pricing
-              </button>
+            <nav className="hidden lg:flex items-center space-x-1 bg-slate-950/70 p-1.5 rounded-full border border-slate-800/80 text-xs font-semibold">
+              {navLinks.slice(0, 6).map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={`px-3.5 py-1.5 rounded-full transition-all ${
+                      isActive
+                        ? 'bg-blue-600/30 text-white border border-blue-500/40 shadow-sm'
+                        : 'text-slate-300 hover:text-white hover:bg-slate-900/60'
+                    }`}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
             </nav>
 
             {/* Right Action & Mobile Toggle */}
             <div className="flex items-center space-x-2 sm:space-x-3">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => {
-                  setActiveTab('media');
-                  scrollToSection('scanner');
-                }}
+              <Link
+                href="/verify"
                 className="relative group px-3.5 sm:px-5 py-2 sm:py-2.5 rounded-xl sm:rounded-full bg-gradient-to-r from-blue-600 via-blue-500 to-cyan-400 hover:opacity-95 text-white font-extrabold text-[11px] sm:text-xs flex items-center space-x-1.5 shadow-lg shadow-blue-500/25 border border-blue-400/30 transition overflow-hidden touch-target"
               >
                 <span className="relative z-10 flex items-center gap-1.5">
@@ -139,13 +115,13 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setAc
                   <ArrowRight className="w-3.5 h-3.5 group-hover:translate-x-1 transition-transform" />
                 </span>
                 <div className="absolute inset-0 bg-gradient-to-r from-cyan-400 via-blue-500 to-indigo-600 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-              </motion.button>
+              </Link>
 
               {/* Mobile Hamburger Button */}
               <button
                 onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
                 aria-label="Toggle Navigation Menu"
-                className="md:hidden p-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white touch-target flex items-center justify-center"
+                className="lg:hidden p-2 rounded-xl bg-slate-900/80 border border-slate-800 text-slate-300 hover:text-white touch-target flex items-center justify-center"
               >
                 {mobileMenuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5 text-slate-300" />}
               </button>
@@ -162,7 +138,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setAc
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            className="fixed inset-0 z-40 md:hidden bg-slate-950/90 backdrop-blur-2xl flex flex-col pt-24 px-6 pb-8 space-y-6 overflow-y-auto"
+            className="fixed inset-0 z-40 lg:hidden bg-slate-950/95 backdrop-blur-2xl flex flex-col pt-24 px-6 pb-8 space-y-6 overflow-y-auto"
           >
             {/* Top Close Bar */}
             <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
@@ -180,75 +156,30 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = ({ activeTab, setAc
 
             {/* Mobile Nav Links */}
             <div className="space-y-2 text-sm font-bold">
-              <button
-                onClick={() => scrollToSection('hero')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Overview</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
+              {navLinks.map((link) => (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={() => setMobileMenuOpen(false)}
+                  className={`w-full min-h-[48px] px-4 py-3 rounded-2xl border text-left flex items-center justify-between transition ${
+                    pathname === link.href
+                      ? 'bg-blue-600/20 border-blue-500/40 text-blue-300'
+                      : 'bg-slate-900/80 border-slate-800 text-slate-200 hover:text-white'
+                  }`}
+                >
+                  <span>{link.label}</span>
+                  <ArrowRight className="w-4 h-4 text-slate-500" />
+                </Link>
+              ))}
 
-              <button
-                onClick={() => {
-                  setActiveTab('media');
-                  scrollToSection('scanner');
-                }}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600/20 to-cyan-500/20 border border-blue-500/40 text-blue-300 text-left flex items-center justify-between"
+              <Link
+                href="/contact"
+                onClick={() => setMobileMenuOpen(false)}
+                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-gradient-to-r from-blue-600/20 to-cyan-500/20 border border-blue-500/40 text-cyan-300 text-left flex items-center justify-between"
               >
-                <span className="flex items-center gap-2">
-                  <Sparkles className="w-4 h-4 text-cyan-400" />
-                  <span>Live Scanner</span>
-                </span>
-                <ArrowRight className="w-4 h-4 text-blue-400" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection('solutions')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Industry Solutions</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection('features')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Features Matrix</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection('developers')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Developer API</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection('security')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Security Controls</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection('pricing')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Pricing Plans</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
-
-              <button
-                onClick={() => scrollToSection('faq')}
-                className="w-full min-h-[48px] px-4 py-3 rounded-2xl bg-slate-900/80 border border-slate-800 text-slate-200 text-left flex items-center justify-between"
-              >
-                <span>Enterprise FAQ</span>
-                <ArrowRight className="w-4 h-4 text-slate-500" />
-              </button>
+                <span>Book Enterprise Demo</span>
+                <ArrowRight className="w-4 h-4 text-cyan-400" />
+              </Link>
             </div>
 
             {/* Quick Links Footer */}
