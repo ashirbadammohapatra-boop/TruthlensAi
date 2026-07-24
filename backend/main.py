@@ -26,16 +26,18 @@ from services.document_url_service import analyze_document_media, analyze_url_me
 from middleware.security import ProductionSecurityMiddleware, validate_magic_bytes
 from services.evaluation_service import evaluate_model_performance
 
-# Import AI Operations Agent Services
+# Import AI Operations Agent Services & Multi-Agent Framework
 from services.agent.health_monitor import SystemHealthMonitor
 from services.agent.recovery_engine import AutomatedRecoveryEngine
 from services.agent.security_monitor import SecuritySentinelAgent
 from services.agent.admin_assistant import SREAdminAssistant
+from services.multi_agent.agent_registry import MultiAgentRegistry
+from services.multi_agent.failure_analyzer import FailureAnalyzer
 
 app = FastAPI(
-    title="TruthLens Enterprise Autonomous Operations Platform Engine",
-    description="Production-grade AI Platform with Autonomous SRE & Security Operations Agent",
-    version="6.1.0"
+    title="TruthLens Enterprise Multi-Agent Verification Platform Engine",
+    description="Production-grade AI Platform with 10 Autonomous Review Agents & Continuous Improvement System",
+    version="6.3.0"
 )
 
 app.add_middleware(ProductionSecurityMiddleware)
@@ -76,6 +78,9 @@ recovery_engine = AutomatedRecoveryEngine()
 security_sentinel = SecuritySentinelAgent()
 admin_assistant = SREAdminAssistant()
 
+multi_agent_registry = MultiAgentRegistry()
+failure_analyzer = FailureAnalyzer()
+
 START_TIME = time.time()
 
 class TextAnalysisRequest(BaseModel):
@@ -89,6 +94,13 @@ class AssistantQueryRequest(BaseModel):
 
 class ApprovalRequest(BaseModel):
     plan_id: str = Field(..., description="Plan ID to approve")
+
+class FailureLogRequest(BaseModel):
+    filename: str
+    predicted_verdict: str
+    ground_truth: str
+    confidence_score: float
+    root_cause: str
 
 class FactorScore(BaseModel):
     name: str
@@ -117,15 +129,15 @@ class AnalysisResult(BaseModel):
     summary: str
     timestamp: float
 
-# --- Health & MLOps Endpoints ---
+# --- Health, MLOps & Multi-Agent Endpoints ---
 
 @app.get("/")
 def read_root():
     return {
         "status": "online",
-        "service": "TruthLens Autonomous AI Operations Platform",
-        "version": "6.1.0",
-        "architecture": "Clean Architecture + Autonomous Agent v6.1",
+        "service": "TruthLens Multi-Agent AI Review & Verification Platform",
+        "version": "6.3.0",
+        "architecture": "Clean Architecture + 10 Autonomous Review Agents v6.3",
         "environment_check": ENV_CHECK_RESULTS,
         "uptime_seconds": round(time.time() - START_TIME, 1),
         "docs": "/docs"
@@ -148,6 +160,24 @@ def health_readiness():
 @app.get("/api/eval/metrics")
 def get_evaluation_metrics():
     return evaluate_model_performance()
+
+@app.get("/api/agents/audit")
+def get_multi_agent_audit():
+    return multi_agent_registry.run_multi_agent_audit()
+
+@app.get("/api/eval/failures")
+def get_failure_analysis_report():
+    return failure_analyzer.get_failure_analysis_report()
+
+@app.post("/api/eval/failure-analysis")
+def submit_failure_analysis(request: FailureLogRequest):
+    return failure_analyzer.log_failure(
+        filename=request.filename,
+        predicted_verdict=request.predicted_verdict,
+        ground_truth=request.ground_truth,
+        confidence_score=request.confidence_score,
+        root_cause=request.root_cause
+    )
 
 @app.get("/api/models/registry")
 def get_model_registry_status():
@@ -325,12 +355,7 @@ async def analyze_image(file: UploadFile = File(...)):
         "risk_level": decision.risk_level.value,
         "confidence": decision.confidence_interval,
         "model_consensus": decision.consensus_percentage,
-        "formula_breakdown": {
-            "ai_detection_score": fused_human_prob,
-            "metadata_score": metadata_res["metadata_score"],
-            "image_quality_score": decision.trust_score,
-            "formula": "Weighted Evidence Fusion Engine"
-        },
+        "formula_breakdown": decision.formula_breakdown,
         "ai_probability": fused_ai_prob,
         "human_probability": fused_human_prob,
         "individual_models": [
