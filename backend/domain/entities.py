@@ -6,7 +6,8 @@ class Verdict(str, Enum):
     LIKELY_AUTHENTIC = "Likely Authentic"
     POSSIBLY_MANIPULATED = "Possibly Manipulated"
     LIKELY_AI_GENERATED = "Likely AI Generated"
-    INCONCLUSIVE = "Inconclusive"
+    INCONCLUSIVE = "Inconclusive — Additional Review Recommended"
+    UNABLE_TO_DETERMINE = "Unable to Determine Reliably"
 
 class RiskLevel(str, Enum):
     LOW = "Low"
@@ -50,5 +51,5 @@ class DecisionResult:
     consensus_percentage: float
     supporting_evidence: List[Evidence]
     contradicting_evidence: List[Evidence]
-    formula_breakdown: Dict[str, float]
+    formula_breakdown: Dict[str, Any]
     execution_time_ms: float
