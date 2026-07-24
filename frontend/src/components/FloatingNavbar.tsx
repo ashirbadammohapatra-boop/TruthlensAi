@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Menu, X, Sparkles, Lock, FileText, Cpu, ShieldCheck } from 'lucide-react';
+import { ArrowRight, Menu, X, Sparkles, Lock, FileText, Cpu, ShieldCheck, Server } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { usePathname } from 'next/navigation';
@@ -26,7 +26,6 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
 
-  // Prevent background scrolling when mobile menu is open
   useEffect(() => {
     if (mobileMenuOpen) {
       document.body.style.overflow = 'hidden';
@@ -46,7 +45,8 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
     { label: 'Technology', href: '/technology' },
     { label: 'Pricing', href: '/pricing' },
     { label: 'Resources', href: '/resources' },
-    { label: 'About', href: '/about' }
+    { label: 'About', href: '/about' },
+    { label: 'Admin', href: '/admin' }
   ];
 
   return (
@@ -81,7 +81,7 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
 
             {/* Desktop Navigation Links */}
             <nav className="hidden lg:flex items-center space-x-1 bg-slate-950/80 p-1.5 rounded-full border border-slate-800/80 text-xs font-semibold">
-              {navLinks.slice(0, 6).map((link) => {
+              {navLinks.slice(0, 7).map((link) => {
                 const isActive = pathname === link.href;
                 return (
                   <Link
@@ -188,9 +188,9 @@ export const FloatingNavbar: React.FC<FloatingNavbarProps> = () => {
                 <Lock className="w-4 h-4 text-blue-400" />
                 <span>Security</span>
               </Link>
-              <Link href="/responsible-ai" onClick={() => setMobileMenuOpen(false)} className="p-3 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center gap-2">
-                <Cpu className="w-4 h-4 text-cyan-400" />
-                <span>Ethics</span>
+              <Link href="/admin" onClick={() => setMobileMenuOpen(false)} className="p-3 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center gap-2">
+                <Server className="w-4 h-4 text-purple-400" />
+                <span>Admin</span>
               </Link>
               <Link href="/privacy" onClick={() => setMobileMenuOpen(false)} className="p-3 rounded-xl bg-slate-900/50 border border-slate-800 flex items-center gap-2">
                 <FileText className="w-4 h-4 text-emerald-400" />

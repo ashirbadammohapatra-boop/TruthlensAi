@@ -14,6 +14,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     '/contact',
     '/verify',
     '/dashboard',
+    '/admin',
     '/reports',
     '/settings',
     '/profile',
